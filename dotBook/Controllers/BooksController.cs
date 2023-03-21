@@ -65,14 +65,7 @@ namespace dotBook.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BookExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();

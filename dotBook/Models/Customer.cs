@@ -17,7 +17,7 @@ namespace dotBook.Models
         public string? Address { get; set; }
 
         [Required]
-        [RegularExpression(@"^(\+)?(\d{9,15})$")]
+        [RegularExpression(@"^([+]\d{2})?\d{10}$")]
         public string? Contact { get; set; }
 
         [Required]

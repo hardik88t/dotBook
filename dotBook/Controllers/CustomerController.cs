@@ -2,7 +2,9 @@
 using System.Linq;
 using dotBook.Data;
 using dotBook.Models;
+using dotBook.Models.NewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace dotBook.Controllers
 {
@@ -17,18 +19,18 @@ namespace dotBook.Controllers
             _context = context;
         }
 
-        // GET api/customer
+        // GET api/customers
         [HttpGet]
-        public ActionResult<IEnumerable<Customer>> Get()
+        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
-            return _context.Customers.ToList();
+            return await _context.Customers.ToListAsync();
         }
 
         // GET api/customer/5
         [HttpGet("{id}")]
-        public ActionResult<Customer> Get(int id)
+        public async Task<ActionResult<Customer>> GetCustomer(int id)
         {
-            var customer = _context.Customers.FirstOrDefault(c => c.Id == id);
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
 
             if (customer == null)
             {
@@ -40,44 +42,76 @@ namespace dotBook.Controllers
 
         // POST api/customer
         [HttpPost]
-        public ActionResult<Customer> Post(Customer customer)
+        public async Task<ActionResult<Customer>> PostCustomer(NewCustomer newcustomer)
         {
-            _context.Customers.Add(customer);
-            _context.SaveChanges();
+            var customer = new Customer()
+            {
+                Name = newcustomer.Name,
+                Address = newcustomer.Address,
+                Contact= newcustomer.Contact,
+            };
 
-            return CreatedAtAction(nameof(Get), new { id = customer.Id }, customer);
+            _context.Customers.Add(customer);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return CreatedAtAction(nameof(GetCustomer), new { id = customer.Id }, customer);
         }
 
         // PUT api/customer/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, Customer customer)
+        public async Task<IActionResult> PutCustomer(int id, NewCustomer newcustomer)
         {
-            if (id != customer.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(customer).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            _context.SaveChanges();
-
-            return NoContent();
-        }
-
-        // DELETE api/customer/5
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            var customer = _context.Customers.FirstOrDefault(c => c.Id == id);
+            var customer = await _context.Customers.FindAsync(id);
 
             if (customer == null)
             {
                 return NotFound();
             }
+            customer.Name = newcustomer.Name;
+            customer.Address = newcustomer.Address;
+            customer.Contact = newcustomer.Contact;
 
-            _context.Customers.Remove(customer);
-            _context.SaveChanges();
+            _context.Entry(customer).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
 
             return NoContent();
         }
+
+        // DELETE api/customer/5
+        //[HttpDelete("{id}")]
+        //public async IActionResult Delete(int id)
+        //{
+        //    var customer = _context.Customers.FirstOrDefault(c => c.Id == id);
+
+        //    if (customer == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    _context.Customers.Remove(customer);
+        //    await _context.SaveChanges();
+
+        //    return NoContent();
+        //}
+        private bool CustomerExists(int id)
+        {
+            return _context.Customers.Any(e => e.Id == id);
+        }
+
     }
 }
