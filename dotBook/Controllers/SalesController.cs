@@ -72,39 +72,39 @@ namespace dotBook.Controllers
                 }
                 else
                 {
-                    sb.Price = _context.Books.Find(sb.BookId).Price ;
+                    if (!BookExists(sb.BookId))
+                    {
+                        return BadRequest("Book " + sb.BookId + " not Found!");
+                    }
+                    else
+                    {
+                        sb.Price = _context.Books.Find(sb.BookId).Price ;
+                    }
+
                 }
 
-
-
-                if (!BookExists(sb.BookId))
+                var book = await _context.Books.FindAsync(sb.BookId);
+                if (book == null)
                 {
-                    return BadRequest("Book " + sb.BookId + " not Found!");
+                    return NotFound();
                 }
-                else
+
+                book.Stock -= sb.Quantity;
+                totalPrice = book.Price * sb.Quantity;
+
+                _context.Entry(book).State = EntityState.Modified;
+
+                try
                 {
-                    var book = await _context.Books.FindAsync(sb.BookId);
-                    if (book == null)
-                    {
-                        return NotFound();
-                    }
-
-                    book.Stock -= sb.Quantity;
-                    totalPrice = book.Price * sb.Quantity;
-
-                    _context.Entry(book).State = EntityState.Modified;
-
-                    try
-                    {
-                        await _context.SaveChangesAsync();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        throw;
-                    }
-
-                    sale.SaleBooks.Add(sb);
+                    await _context.SaveChangesAsync();
                 }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw;
+                }
+
+                sale.SaleBooks.Add(sb);
+                
             }
 
             sale.CustomerId = newsale.CustomerId;

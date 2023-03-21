@@ -14,7 +14,7 @@ namespace dotBook.Data
         }
         public DbSet<Book> Books { get; set; }
         public DbSet<Sale> Sales { get; set; }
-        public DbSet<SaleBook> BooksBook { get; set; }
+        public DbSet<SaleBook> SaleBooks { get; set; }
         public DbSet<Customer> Customers { get; set; }
         //public DbSet<StockOfBook> StockOfBooks { get; set;}
 

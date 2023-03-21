@@ -25,6 +25,6 @@ namespace dotBook.Models
 
         [Required]
         [Range(1, int.MaxValue)]
-        public decimal Price { get; set; }
+        public int Price { get; set; }
     }
 }

@@ -10,11 +10,11 @@ namespace dotBook.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CustomerController : ControllerBase
+    public class CustomersController : ControllerBase
     {
         private readonly DotDBcontext _context;
 
-        public CustomerController(DotDBcontext context)
+        public CustomersController(DotDBcontext context)
         {
             _context = context;
         }
