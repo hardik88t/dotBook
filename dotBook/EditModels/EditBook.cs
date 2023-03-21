@@ -1,4 +1,4 @@
-﻿namespace dotBook.Models.EditModels
+﻿namespace dotBook.EditModels
 {
     public class EditBook
     {

@@ -1,11 +1,10 @@
 ﻿using dotBook.Data;
+using dotBook.EditModels;
 using dotBook.Models;
-using dotBook.Models.EditModels;
-using dotBook.Models.NewModels;
+using dotBook.NewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
-
+using Microsoft.IdentityModel.Tokens;
 
 namespace dotBook.Controllers
 {
@@ -75,6 +74,19 @@ namespace dotBook.Controllers
         [HttpPost]
         public async Task<ActionResult<Book>> PostBook(NewBook newbook)
         {
+            if(newbook.Price == 0)
+            {
+                newbook.Price = 8424;
+            }
+            if(newbook.Stock == 0)
+            {
+                newbook.Stock = 512;
+            }
+            if(newbook.ISBN == "string")
+            {
+                newbook.ISBN = "462698056840";
+
+            }
             var book = new Book()
             {
                 Title = newbook.Title,

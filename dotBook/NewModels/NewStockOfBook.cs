@@ -1,4 +1,4 @@
-﻿namespace dotBook.Models.NewModels
+﻿namespace dotBook.NewModels
 {
     public class NewStockOfBook
     {

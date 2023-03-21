@@ -10,8 +10,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DotDBcontext>(options => options.UseInMemoryDatabase("dotBookDB"));
-//builder.Services.AddDbContext<dotDBcontext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("demoBookDBCS")));
+//builder.Services.AddDbContext<DotDBcontext>(options => options.UseInMemoryDatabase("dotBookDB"));
+builder.Services.AddDbContext<DotDBcontext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("dotBookDBcs")));
 
 
 var app = builder.Build();

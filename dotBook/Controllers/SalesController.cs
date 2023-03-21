@@ -1,10 +1,9 @@
 ﻿using dotBook.Data;
 using dotBook.Models;
-using dotBook.Models.EditModels;
-using dotBook.Models.NewModels;
+using dotBook.EditModels;
+using dotBook.NewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace dotBook.Controllers
 {
@@ -59,52 +58,62 @@ namespace dotBook.Controllers
                 return BadRequest("Customer " + newsale.CustomerId + " Not Found!");
             }
             sale.SaleBooks = new List<SaleBook>(); // Initialize the SaleBooks property
-
-            foreach (var nsb in newsale.NewSaleBook)
+            try
             {
-                SaleBook sb = new SaleBook();
-                
-                sb.BookId = nsb.BookId;
-                sb.Quantity = nsb.Quantity;
-                if(nsb.Price != 0)
+                foreach (var nsb in newsale.NewSaleBook)
                 {
-                    sb.Price = nsb.Price;
-                }
-                else
-                {
-                    if (!BookExists(sb.BookId))
+                    SaleBook sb = new SaleBook();
+
+                    if (!BookExists(nsb.BookId))
                     {
                         return BadRequest("Book " + sb.BookId + " not Found!");
                     }
+                    sb.BookId = nsb.BookId;
+                    
+                    if (nsb.Quantity == 0)
+                    {
+                        sb.Quantity = 3;
+                    }
                     else
                     {
-                        sb.Price = _context.Books.Find(sb.BookId).Price ;
+                        sb.Quantity = nsb.Quantity;
+                    }
+                    if (nsb.Price != 0)
+                    {
+                        sb.Price = nsb.Price;
+                    }
+                    
+                    //sb.Price = await _context.Books.FindAsync(sb.BookId).Price;
+                    
+
+                    var book = await _context.Books.FindAsync(sb.BookId);
+                    if (book == null)
+                    {
+                        return NotFound();
+                    }
+                    sb.Price = book.Price;
+                    book.Stock -= sb.Quantity;
+                    totalPrice = book.Price * sb.Quantity;
+
+                    _context.Entry(book).State = EntityState.Modified;
+
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        throw;
                     }
 
+                    sale.SaleBooks.Add(sb);
+
                 }
+            }
+            catch(Exception ex)
+            {
+                throw new NotImplementedException("Not Implemented, error : " + ex);
 
-                var book = await _context.Books.FindAsync(sb.BookId);
-                if (book == null)
-                {
-                    return NotFound();
-                }
-
-                book.Stock -= sb.Quantity;
-                totalPrice = book.Price * sb.Quantity;
-
-                _context.Entry(book).State = EntityState.Modified;
-
-                try
-                {
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    throw;
-                }
-
-                sale.SaleBooks.Add(sb);
-                
             }
 
             sale.CustomerId = newsale.CustomerId;
@@ -115,6 +124,11 @@ namespace dotBook.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetSale), new { id = sale.Id }, sale);
+        }
+
+        private void ThrowIfNull(ICollection<NewSaleBook>? newSaleBook)
+        {
+            throw new NotImplementedException("Thrown as salebooks is null");
         }
 
         //// PUT: api/Sales/5

@@ -2,7 +2,7 @@
 using System.Linq;
 using dotBook.Data;
 using dotBook.Models;
-using dotBook.Models.NewModels;
+using dotBook.NewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -44,6 +44,10 @@ namespace dotBook.Controllers
         [HttpPost]
         public async Task<ActionResult<Customer>> PostCustomer(NewCustomer newcustomer)
         {
+            if(newcustomer.Contact == "string")
+            {
+                newcustomer.Contact = "9558405050";
+            }
             var customer = new Customer()
             {
                 Name = newcustomer.Name,
