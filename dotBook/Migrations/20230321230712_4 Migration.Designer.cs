@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using dotBook.Data;
 
@@ -11,9 +12,11 @@ using dotBook.Data;
 namespace dotBook.Migrations
 {
     [DbContext(typeof(DotDBcontext))]
-    partial class DotDBcontextModelSnapshot : ModelSnapshot
+    [Migration("20230321230712_4 Migration")]
+    partial class _4Migration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

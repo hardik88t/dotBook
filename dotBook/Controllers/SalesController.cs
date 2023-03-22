@@ -4,6 +4,7 @@ using dotBook.EditModels;
 using dotBook.NewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace dotBook.Controllers
 {
@@ -50,6 +51,7 @@ namespace dotBook.Controllers
         public async Task<ActionResult<Sale>> PostSale(NewSale newsale)
         {
             Sale sale = new Sale();
+            sale.SaleDate = DateTime.Now;
 
             int totalPrice = 0;
             
@@ -60,16 +62,16 @@ namespace dotBook.Controllers
             sale.SaleBooks = new List<SaleBook>(); // Initialize the SaleBooks property
             try
             {
-                foreach (var nsb in newsale.NewSaleBook)
+                foreach (var (nsb, sb) in from nsb in newsale.NewSaleBook
+                                          let sb = new SaleBook()
+                                          select (nsb, sb))
                 {
-                    SaleBook sb = new SaleBook();
-
                     if (!BookExists(nsb.BookId))
                     {
                         return BadRequest("Book " + sb.BookId + " not Found!");
                     }
+
                     sb.BookId = nsb.BookId;
-                    
                     if (nsb.Quantity == 0)
                     {
                         sb.Quantity = 3;
@@ -78,25 +80,22 @@ namespace dotBook.Controllers
                     {
                         sb.Quantity = nsb.Quantity;
                     }
+
                     if (nsb.Price != 0)
                     {
                         sb.Price = nsb.Price;
                     }
-                    
                     //sb.Price = await _context.Books.FindAsync(sb.BookId).Price;
-                    
-
                     var book = await _context.Books.FindAsync(sb.BookId);
                     if (book == null)
                     {
                         return NotFound();
                     }
+
                     sb.Price = book.Price;
                     book.Stock -= sb.Quantity;
                     totalPrice = book.Price * sb.Quantity;
-
                     _context.Entry(book).State = EntityState.Modified;
-
                     try
                     {
                         await _context.SaveChangesAsync();
@@ -107,7 +106,6 @@ namespace dotBook.Controllers
                     }
 
                     sale.SaleBooks.Add(sb);
-
                 }
             }
             catch(Exception ex)

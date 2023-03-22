@@ -23,6 +23,7 @@ namespace dotBook.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
+
             return await _context.Books.ToListAsync();
         }
 
@@ -95,8 +96,9 @@ namespace dotBook.Controllers
                 Stock = newbook.Stock,
                 Description = newbook.Description,
                 Publisher = newbook.Publisher,
-                ISBN= newbook.ISBN
-            };
+                ISBN= newbook.ISBN,
+                ArrivalDate = DateTime.Now
+        };
 
 
             _context.Books.Add(book);

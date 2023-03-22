@@ -1,5 +1,11 @@
 using dotBook.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
+using System.Security.Cryptography.X509Certificates;
+using System.IO;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,3 +36,15 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+//.UseKestrel(options =>
+// {
+//     options.ListenAnyIP(5000, listenOptions =>
+//     {
+//         listenOptions.UseHttps(new HttpsConnectionAdapterOptions
+//         {
+//             ServerCertificate = new X509Certificate2(Path.Combine("Certificates", "localhost.pfx"), "password")
+//         });
+//     });
+// })

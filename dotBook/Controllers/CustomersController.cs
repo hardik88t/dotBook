@@ -53,6 +53,7 @@ namespace dotBook.Controllers
                 Name = newcustomer.Name,
                 Address = newcustomer.Address,
                 Contact= newcustomer.Contact,
+                JoinDate = DateTime.Now
             };
 
             _context.Customers.Add(customer);

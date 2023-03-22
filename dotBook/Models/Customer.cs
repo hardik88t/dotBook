@@ -21,7 +21,7 @@ namespace dotBook.Models
         public string? Contact { get; set; }
 
         [Required]
-        public DateTime SaleDate { get; set; }
+        public DateTime JoinDate { get; set; }
 
 
     }

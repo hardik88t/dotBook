@@ -34,7 +34,7 @@ namespace dotBook.Models
         public string? ISBN { get; set; }
 
         [Required]
-        public DateTime SaleDate { get; set; }
+        public DateTime ArrivalDate { get; set; }
 
     }
 }
